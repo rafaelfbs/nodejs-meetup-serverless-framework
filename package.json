@@ -1,4 +1,8 @@
 {
   "name": "nodejs-presentation-serverless-framework",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "serverless": "^1.65.0",
+    "serverless-offline": "^5.12.1"
+  }
 }
