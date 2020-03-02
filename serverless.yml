@@ -1,16 +1,46 @@
 service: nodejs-meetup
 
+custom:
+  buckets:
+    imageAnalysis: nodejs-meetup-image-analysis
+
 provider:
   name: aws
   runtime: nodejs10.x
+  iamRoleStatements:
+  - Effect: Allow
+    Action:
+    - s3:*
+    Resource: "*"
+  - Effect: Allow
+    Action:
+    - rekognition:*
+    Resource: "*"
 
 functions:
-  hello:
-    handler: functions/hello.handler
+  PresignUpload:
+    handler: api/presign-upload.handler
     events:
     - http:
-        path: hello
+        path: /presign-upload
         method: get
+    environment:
+      BUCKET: ${self:custom.buckets.imageAnalysis}
+  ImageAnalysis:
+    handler: api/image-analysis.handler
+    events:
+    - http:
+        path: /image-analysis/{image}
+        method: get
+    environment:
+      BUCKET: ${self:custom.buckets.imageAnalysis}
 
 plugins:
 - serverless-offline
+
+resources:
+  Resources:
+    ImageAnalysisS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.buckets.imageAnalysis}
