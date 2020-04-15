@@ -9,7 +9,7 @@ exports.handler = async (event) => {
     const data = s3.createPresignedPost({
         Bucket: bucket,
         Conditions: [
-            ["content-length-range", 	0, 10000000],
+            ["content-length-range", 0, 10000000],
             ["starts-with", "$Content-Type", "image/"],
             {"acl": "public-read"}
         ],

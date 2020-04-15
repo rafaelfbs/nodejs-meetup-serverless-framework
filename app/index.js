@@ -9,7 +9,7 @@ const getImageLabels = async (image) => {
     return fetch(`http://localhost:3000/image-analysis/${image}`)
         .then(res => res.json())
         .then(res => res.labels);
-}
+};
 
 const createUploadFormData = async (file, signedPostData) => {
     const formData = new FormData();
@@ -32,7 +32,7 @@ const createUploadResponse = async (res, signedPostData) => {
     }
 
     return { success, error: new Error(res.statusText) };
-}
+};
 
 const uploadFile = async (file) => {
     const signedPostData = await getPresignedData();
@@ -48,12 +48,13 @@ const uploadFile = async (file) => {
 
 const ImageResult = ({ data }) => (
     <div>
-        <img src={data.url} alt="image" style={{ width: '300px' }}></img>
+        <img src={data.url} alt="image" style={{width: '300px'}} />
         <table>
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>Confidence</th>
+                    <th>Parents</th>
                 </tr>
             </thead>
             <tbody>
@@ -61,6 +62,7 @@ const ImageResult = ({ data }) => (
                     <tr key={index}>
                         <td>{it.Name}</td>
                         <td>{it.Confidence}</td>
+                        <td>{it.Parents.map(parent => parent.Name).join(', ')}</td>
                     </tr>
                 ))}
             </tbody>
@@ -76,11 +78,7 @@ const App = () => {
     const handleSubmit = React.useCallback(e => {
         e.preventDefault();
 
-        uploadFile(data)
-            .then(res => {
-                setUploadResult(res)
-                return analyzeImage(res.key);
-            });
+        uploadFile(data).then(setUploadResult);
     });
 
     return (
@@ -93,6 +91,6 @@ const App = () => {
             {uploadResult.error && <div>Upload Error: {uploadResult.error.message}!</div>}
         </form>
     );
-}
+};
 
 ReactDOM.render(<App />, document.getElementById("root"));
